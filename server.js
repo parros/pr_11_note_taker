@@ -1,7 +1,9 @@
 const {readFile, writeFile} = require('fs/promises')
 const path = require('path')
 const express = require('express')
+
 // const notesData = require('./db/db.json')
+
 
 const app = express()
 const PORT = 3001
@@ -20,6 +22,7 @@ app.get('/notes', (req, res) => {
 app.get('/api/notes', (req, res) => {
     let finalResult = notesData
 })
+
 
 app.post('/api/notes', async (req, res) => {
     const newNote = req.body
