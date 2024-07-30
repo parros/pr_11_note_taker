@@ -38,6 +38,16 @@ app.post('/api/notes', async (req, res) => {
     res.status(201).json(newNote)
 })
 
+app.delete('/api/notes/:id', async (req, res) => {
+    const id = req.params.id
+    const notes = await readNotesDB()
+
+    const filterNotes = notes.filter(note => note.id !== id)
+    await writeNotesDB(filterNotes)
+
+    res.status(200).send()
+})
+
 app.listen(PORT, () => {
     console.log(`Server listening at http://localhost:${PORT}`)
 })
