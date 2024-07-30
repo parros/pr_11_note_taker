@@ -1,6 +1,7 @@
 const { readNotesDB, writeNotesDB } = require('./utils/file-system')
 const path = require('path')
 const express = require('express')
+const { v4: uuidv4 } = require('uuid')
 
 const app = express()
 const PORT = 3001
@@ -24,18 +25,11 @@ app.get('/api/notes', async (req, res) => {
     res.json(finalResult)
 })
 
-app.get('api/animals/:name', async (req, res) => {
-    const name = req.params.name.toLowerCase()
-
-    const notes = await readNotesDB()
-
-    let foundNotes = notes.filter(animal => animal.name.toLowerCase() === name)
-
-    res.json(foundNotes)
-})
-
 app.post('/api/notes', async (req, res) => {
-    const newNote = req.body
+    const newNote = {
+        id: uuidv4(),
+        ...req.body
+    }
 
     const notes = await readNotesDB()
     notes.push(newNote)
