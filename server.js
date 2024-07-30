@@ -1,9 +1,6 @@
-const {readFile, writeFile} = require('fs/promises')
+const { readNotesDB, writeNotesDB } = require('./utils/file-system')
 const path = require('path')
 const express = require('express')
-
-// const notesData = require('./db/db.json')
-
 
 const app = express()
 const PORT = 3001
@@ -19,22 +16,34 @@ app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'notes.html'))
 })
 
-app.get('/api/notes', (req, res) => {
-    let finalResult = notesData
+app.get('/api/notes', async (req, res) => {
+
+    const notes = await readNotesDB()
+    let finalResult = notes
+
+    res.json(finalResult)
 })
 
+app.get('api/animals/:name', async (req, res) => {
+    const name = req.params.name.toLowerCase()
+
+    const notes = await readNotesDB()
+
+    let foundNotes = notes.filter(animal => animal.name.toLowerCase() === name)
+
+    res.json(foundNotes)
+})
 
 app.post('/api/notes', async (req, res) => {
     const newNote = req.body
 
-    const content = await readFile(path.join(__dirname, 'db', 'db.json'), 'utf-8')
-    const notes = JSON.parse(content)
+    const notes = await readNotesDB()
     notes.push(newNote)
-    await writeFile(path.join(__dirname, 'db', 'db.json'), JSON.stringify(notes))
+    await writeNotesDB(notes)
 
-    res.end()
+    res.status(201).json(newNote)
 })
 
 app.listen(PORT, () => {
-    console.log(`Server lsitening at http://localhost:${PORT}`)
+    console.log(`Server listening at http://localhost:${PORT}`)
 })
